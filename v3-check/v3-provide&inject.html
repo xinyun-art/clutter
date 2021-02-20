@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- x-template-parent -->
+    <script type="x-template" id="parent">
+      <div>
+        <h2>I'm Parent</h2>
+        <button @click="sayChange">实话实说</button>
+        <second-child></second-child>
+      </div>
+    </script>
+    <!-- x-template-second -->
+    <script type="x-template" id="second">
+      <div style="text-indent: 2em">
+        <h4>I'm Second-Child</h4>
+        <third-child></third-child>
+      </div>
+    </script>
+    <!-- x-template-third -->
+    <script type="x-template" id="third">
+      <div style="text-indent: 4em">
+        <h6>I'm Third-Child</h6>
+        <p>Parent对我说：{{parentSay.value}}</p>
+      </div>
+    </script>
+    <script src="./js/vue.global.js"></script>
+    <script>
+      const app = Vue.createApp({
+        template: '#parent',
+        data() {
+          return {
+            parentSay: 'woshinidaye',
+          }
+        },
+        provide() {
+          return {
+            secret: { id: 1, title: 'pwd' },
+            parentSay: Vue.computed(() => this.parentSay),
+          }
+        },
+        methods: {
+          sayChange() {
+            this.parentSay = 'qishiwoshininainaia'
+          },
+        },
+      })
+      app.component('second-child', {
+        template: '#second',
+      })
+      app.component('third-child', {
+        template: '#third',
+        inject: ['secret', 'parentSay'],
+        created() {
+          console.log('third-inject-secret:', this.secret)
+          console.log('third-inject-parentSay:', this.parentSay)
+        },
+      })
+      app.mount('#app')
+    </script>
+  </body>
+</html>

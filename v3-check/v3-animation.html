@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      .ball-wrapper {
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      .ball {
+        width: 50px;
+        height: 50px;
+        background-color: orangered;
+        border-radius: 50%;
+        /* background: url(./images/football.png) no-repeat; */
+        background-size: contain;
+      }
+      @keyframes hor-animation {
+        0% {
+          transform: translate3d(0, 0, 0);
+        }
+        100% {
+          transform: translate3d(93vw, 0, 0);
+        }
+      }
+      @keyframes vertical-animation {
+        0% {
+          transform: translate3d(0, 0, 0);
+        }
+        20% {
+          transform: translate3d(0, 35vh, 0);
+          /* 为了模拟出球落地后弹跳的效果，当球弹起时应该应用先快后慢的贝塞尔曲线，这与球落下时应用的贝塞尔曲线（先慢后快）相反 */
+          animation-timing-function: cubic-bezier(0.27, 0.62, 0.59, 0.91);
+        }
+        40% {
+          transform: translate3d(0, 0, 0);
+        }
+        60% {
+          transform: translate3d(0, 35vh, 0);
+          animation-timing-function: cubic-bezier(0.27, 0.62, 0.59, 0.91);
+        }
+        /* 80% {
+          transform: translate3d(0, 35vh, 0);
+        } */
+        100% {
+          transform: translate3d(0, 35vh, 0);
+        }
+      }
+      /* ball wrapper在水平方向匀速前进（假设空气阻力忽略不计） */
+      .ball-wrapper {
+        animation: name duration timing-function delay iteration-count direction fill-mode;
+        animation: hor-animation 3s linear 0.5s 1 alternate forwards;
+      }
+      /* ball在竖直方向做变速运动 */
+      .ball {
+        animation: vertical-animation 3s 0.5s 1 alternate forwards;
+        /* 对于关键帧动画来说，timing function作用于一个关键帧周期而非整个动画周期，即从关键帧开始开始，到关键帧结束结束。 */
+        /* 球落下时应用的贝塞尔曲线（先慢后快） */
+        animation-timing-function: cubic-bezier(0.48, 0.23, 0.81, 0.56);
+      }
+      @keyframes move-toleft {
+        0% {
+          transform: translate3d(93vw, 0, 0);
+        }
+        100% {
+          transform: translate3d(0, 0, 0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- 
+        ball wrapper在水平方向匀速前进（空气阻力忽略不计）
+        ball在竖直方向做变速运动
+        两个方向的运动叠加便可使球做抛物线/曲线运动 
+      -->
+      <div class="ball-wrapper" ref="ballWrapper">
+        <div class="ball"></div>
+      </div>
+      <div>
+        <button @click="goBack">back</button>
+      </div>
+    </div>
+    <script src="./js/vue.global.js"></script>
+    <script>
+      const { ref } = Vue
+      const app = Vue.createApp({
+        setup(a, b) {
+          const ballWrapper = ref(null)
+          const goBack = () => {
+            console.log('go back!')
+            ballWrapper.value.style.animation = 'move-toleft 3s ease forwards'
+          }
+          return { goBack, ballWrapper }
+        },
+      })
+
+      app.mount('#app')
+    </script>
+  </body>
+</html>

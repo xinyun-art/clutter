@@ -1,0 +1,15 @@
+{
+  "editor.fontSize": 16,
+  "editor.tabSize": 2,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 135,
+  "editor.formatOnSave": true,
+  "prettier.arrowParens": "avoid",
+  "prettier.printWidth": 135,
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
+  "prettier.useTabs": true,
+  "editor.fontWeight": "normal",
+  "editor.fontFamily": "Fira Code",
+  "editor.fontLigatures": true
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.min.css" rel="stylesheet" type="text/css" /> -->
+    <style>
+      #demo {
+        width: 500px;
+        height: 400px;
+        margin: 0 auto;
+        background-color: lightgrey;
+      }
+      .tk-enter-from,
+      .tk-leave-to {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      .tk-enter-active {
+        transition: all 1.2s ease-out;
+      }
+      .tk-leave-active {
+        transition: all 0.4s ease-in;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="demo">
+      <div id="demo">
+        <button @click="show = !show">Toggle render</button>
+
+        <transition name="tk">
+          <p v-if="show">hello</p>
+          <p v-else>world</p>
+        </transition>
+      </div>
+    </div>
+    <script src="./js/vue.global.js"></script>
+    <script>
+      const Demo = {
+        data() {
+          return {
+            show: true,
+          }
+        },
+      }
+      Vue.createApp(Demo).mount('#demo')
+    </script>
+  </body>
+</html>

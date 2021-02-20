@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>scrollview</title>
+		<style>
+			html,
+			body {
+				height: 100%;
+			}
+			body {
+				margin: 0;
+				background-color: #f1f2f6;
+			}
+			.main {
+				width: 100%;
+				height: 100%;
+				background-color: #bdc581;
+			}
+			.mian--left {
+				position: fixed;
+				left: 0;
+				top: 0;
+				width: 60px;
+				height: 100%;
+				background-color: #f8efba;
+			}
+			.mian--right {
+				padding-left: 60px;
+			}
+			.food__item--nav {
+				height: 33px;
+				line-height: 33px;
+				text-align: center;
+				color: #666;
+				border-bottom: 1px solid #bdc581;
+			}
+			.food__item--nav--select {
+				background-color: #f8c291;
+			}
+			.food__list {
+				position: relative;
+			}
+			.food__item {
+				height: 160px;
+				background-color: #58b19f;
+				border-bottom: 1px solid #fea47f;
+				box-sizing: border-box;
+			}
+			.food__item:not(:first-child) {
+				margin-top: 15px;
+			}
+			.banner {
+				position: sticky;
+				left: 0;
+				top: 0;
+				z-index: 999;
+				width: 100%;
+				height: 160px;
+				background-color: #fea47f;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<main class="main">
+				<div class="mian--left">
+					<div class="food__list--nav">
+						<div
+							class="food__item--nav"
+							:class="{'food__item--nav--select': navIndex === index}"
+							v-for="(item, index) of navList"
+							:key="index"
+							@click="navClick(index)"
+						>
+							{{item}}
+						</div>
+					</div>
+				</div>
+				<div class="mian--right">
+					<div class="banner"></div>
+					<div class="food__list">
+						<div class="food__item" v-for="(item, index) of 16" :key="index"></div>
+					</div>
+				</div>
+			</main>
+		</div>
+		<script src="./js/vue.global.js"></script>
+		<script>
+			const { reactive, ref, onMounted } = Vue
+			const app = Vue.createApp({
+				setup() {
+					console.log('setup')
+
+					const navList = reactive([
+						'壹',
+						'贰',
+						'叁',
+						'肆',
+						'伍',
+						'陆',
+						'柒',
+						'捌',
+						'玖',
+						'拾',
+						'十一',
+						'十二',
+						'十三',
+						'十四',
+						'十五',
+						'十六',
+					])
+					let navIndex = ref(0)
+
+					onMounted(() => {
+						console.log('onMounted')
+						window.addEventListener('scroll', handleScroll)
+					})
+
+					let tempIndex = 0
+					let scrollTimer = 0
+					const handleScroll = () => {
+						clearTimeout(scrollTimer)
+						scrollTimer = setTimeout(() => {
+							console.log('handleScroll')
+							const toTopDistanceList = [...document.querySelectorAll('.food__item')].map(item => item.offsetTop)
+							console.log('toTopDistanceList:', toTopDistanceList)
+							let scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+							console.log('scrollTop:', scrollTop)
+							for (let i = 0; i < toTopDistanceList.length; i++) {
+								if (scrollTop >= toTopDistanceList[i]) {
+									tempIndex = i
+								}
+							}
+							navIndex.value = tempIndex
+							console.log('navIndex:', navIndex.value)
+						}, 250)
+					}
+
+					const navClick = i => {
+						console.log('i:', i)
+						// const foodItemList = [...document.querySelectorAll('.food__item')]
+						// foodItemList[i].scrollIntoView({ behavior: 'smooth', block: 'start' }) // 兼容性略差
+						const toTopDistanceList = [...document.querySelectorAll('.food__item')].map(item => item.offsetTop)
+						window.scrollTo({ top: toTopDistanceList[i], left: 0, behavior: 'smooth' }) // 不考虑ie基本能用
+					}
+
+					return { navList, navIndex, navClick }
+				},
+			})
+			app.mount('#app')
+		</script>
+	</body>
+</html>

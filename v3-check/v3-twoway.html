@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>v3</title>
+  </head>
+  <body>
+    <div id="app">
+      <self-input
+        :content="content"
+        :font-size="fontSize"
+        @enlarge-text="fontSize=$event"
+        @ensmall-text="fontSize=$event"
+      ></self-input>
+    </div>
+    <script src="./js/vue.global.js"></script>
+    <!-- 组件通过外部引入局部注册 -->
+    <!-- <script src="./components/SelfInput.js"></script> -->
+    <script>
+      // 局部注册
+      const SelfInput = {
+        props: ['content', 'fontSize'],
+        // 建议定义所有发出的事件，以便更好地记录组件应该如何工作。
+        emits: ['enlarge-text'],
+        template: `
+          <div>
+            <p style="width:50%;background:deepskyblue;padding:10px;border-radius:5px" :style="{fontSize: fs+'px',fontFamily:fm}">{{content}}</p>
+            <button @click="$emit('enlarge-text', fs++)">enlarge-text</button>
+            <button @click="$emit('ensmall-text', fs--)">enlarge-text</button>
+            <select v-model="fm">
+              <option disabled value="">-选择字体-</option>
+              <option value="幼圆">幼圆</option>
+              <option value="黑体">黑体</option>
+              <option value="楷体">楷体</option>
+            </select>
+          </div>
+        `,
+        data() {
+          return {
+            fs: this.fontSize,
+            fm: '',
+          }
+        },
+      }
+
+      // 创建一个Vue 应用
+      const app = Vue.createApp({
+        components: {
+          SelfInput,
+        },
+        data() {
+          return {
+            content: `原名周树人，字豫才，小名樟寿，至三十八岁，始用鲁迅为笔名。浙江省绍兴人。中国现代伟大的文学家、思想家。
+              幼时就读于绍兴府城内私塾三味书屋，1898年考入江南水师学堂，1899年改入江南陆师学堂附设矿路学堂，1902年被选派赴日本留学，入读东京弘文学院，1904年转入仙台医专学医。1906年终止学医，在东京研究文艺。
+              1909年回国，在浙江两级师范学堂和绍兴中学堂任教。1912年民国政府成立后，先后在教育部及北京师范大学、北京大学、厦门大学、中山大学等校任职。
+              1918年首次以"鲁迅"为笔名，在《新青年》发表了第一篇小说《狂人日记》。此后陆续出版小说集《呐喊》、《彷徨》，论文集《坟》，散文诗集《野草》、散文集《朝花夕拾》、杂文集《热风》、《华盖集》、《华盖集续编》等专集。1926年间编著《汉文学史纲要》、《而已集》及《故事新编》的部分作品。1927年到上海，专事著作。陆续写作了《南腔北调集》、《三闲集》、《二心集》、《伪自由书》、《准风月谈》、《花边文学》及三本《且介亭杂文》等大量杂文，抨击时弊、揭露黑暗，成为中国现代文化界的精神领袖。`,
+            fontSize: '18',
+          }
+        },
+      })
+
+      // 全局注册
+      /*
+      app.component('self-input', {
+        props: ['content', 'fontSize'],
+        // 建议定义所有发出的事件，以便更好地记录组件应该如何工作。
+        emits: ['enlarge-text'],
+        template: `
+          <div>
+            <p style="width:50%;background:deepskyblue;padding:10px;border-radius:5px" :style="{fontSize: fs+'px',fontFamily:fm}">{{content}}</p>
+            <button @click="$emit('enlarge-text', fs++)">enlarge-text</button>
+            <button @click="$emit('ensmall-text', fs--)">enlarge-text</button>
+            <select v-model="fm">
+              <option disabled value="">-选择字体-</option>
+              <option value="幼圆">幼圆</option>
+              <option value="黑体">黑体</option>
+              <option value="楷体">楷体</option>
+            </select>
+          </div>
+        `,
+        data() {
+          return {
+            fs: this.fontSize,
+            fm: '',
+          }
+        },
+      })*/
+
+      let vm = app.mount('#app')
+    </script>
+  </body>
+</html>

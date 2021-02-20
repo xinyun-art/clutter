@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        width: 500px;
+        height: 300px;
+        background-color: lightgrey;
+        margin: 0 auto;
+      }
+      li,
+      button {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="./js/vue.global.js"></script>
+    <script type="x-template" id="app">
+      <div class="container">
+        <button v-for="(item, index) of characters" @click="tabChange(index)">{{item}}</button>
+        <keep-alive>
+          <component :is="cp"></component>
+        </keep-alive>
+        <async-example></async-example>
+      </div>
+    </script>
+    <script>
+      const app = Vue.createApp({
+        template: '#app',
+        data() {
+          return {
+            characters: ['马保国', '二仙桥大爷', '谭警官'],
+            cp: 'ma-bao-guo',
+          }
+        },
+        methods: {
+          tabChange(index) {
+            switch (index) {
+              case 0:
+                this.cp = 'ma-bao-guo'
+                break
+              case 1:
+                this.cp = 'er-xian-qiao'
+                break
+              case 2:
+                this.cp = 'tan-sir'
+                break
+            }
+          },
+        },
+      })
+      app.component('ma-bao-guo', {
+        template: `<div>我大意了啊，没有闪，凉了啊，任命日报，不讲武德！</div>`,
+        created() {
+          console.log('ma-bao-guo-created')
+        },
+      })
+      app.component('er-xian-qiao', {
+        template: `
+          <div>
+            <ul>
+              <li v-for="(road, index) of roads" @click="direction=index">{{road}}</li>
+            </ul>
+            <p v-show="direction===0">去二仙桥要走成华大道</p>  
+            <p v-show="direction===1">走成华大道找大桥</p>  
+            <p v-show="direction===0">走成华大道找二桥</p>  
+          </div>
+        `,
+        data() {
+          return {
+            roads: ['成华大道', '大桥', '二桥'],
+            direction: 0,
+          }
+        },
+        created() {
+          console.log('er-xian-qiao-created')
+        },
+      })
+      app.component('tan-sir', {
+        template: `<div>大爷，您该走哪条道啊？</div>`,
+        created() {
+          console.log('tan-sir-created')
+        },
+      })
+
+      // 异步组件
+      const AsyncComp = Vue.defineAsyncComponent(
+        () =>
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              resolve({
+                template: '<div>I am async!I will be loaded tow seconds later!</div>',
+              })
+            }, 2000)
+          })
+      )
+      app.component('async-example', AsyncComp)
+
+      app.mount('#root')
+    </script>
+  </body>
+</html>

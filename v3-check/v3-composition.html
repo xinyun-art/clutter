@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      #app {
+        width: 100%;
+        margin: 0 auto;
+        /* background-color:rgb(245, 245, 220); */
+        background-color:rgb(245, 245, 245);
+        /* background-color: rgb(248, 248, 255); */
+        padding: 0 10px 20px;
+        box-sizing: border-box;
+      }
+      h2 {
+        color: crimson;
+        margin: 0;
+      }
+      h4 {
+        color: deepskyblue;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- --------------------------------------------------------- -->
+      <h2>ref data</h2>
+      <hr />
+      <p>
+        <h4>ref data(array): works</h4>
+        <ul>
+          <li v-for="work of works">{{work}}</li>
+        </ul>
+        <div>
+          <button @click="refArrWorksGO">gogogo</button>
+        </div>
+      </p>
+      <p>
+        <h4>ref data(array) computed of works: worksplus</h4>
+        <ul>
+          <li v-for="work of worksplus">{{work}}</li>
+        </ul>
+      </p>
+      <p>
+        <h4>ref data(object): state</h4>
+        <p>{{state}}</p>
+        <div>
+          <button @click="refObjStateGO">gogogo</button>
+        </div>
+      </p>
+      <p>
+        <h4>ref data(object) computed of state: stateplus</h4>
+        <p>{{stateplus}}</p>
+      </p>
+      <p>
+        <h4>ref data(string): wish</h4>
+        <p>{{wish}}</p>
+        <div>
+          <button @click="refStrWishGO">gogogo</button>
+        </div>
+      </p>
+      <p>
+        <h4>ref data(string) computed of wish: wishplus</h4>
+        <p>{{wishplus}}</p>
+      </p>
+      <!-- ---------------------------------------------------------------------------->
+      <h2>reactive data</h2>
+      <hr />
+      <p>
+        <h4>reactive data(array): hobbies</h4>
+        <ul>
+          <li v-for="hobby of hobbies">{{hobby}}</li>
+        </ul>
+        <div>
+          <button @click="reactiveArrGo">gogogo</button>
+        </div>
+      </p>
+      <p>
+        <h4>reactive data(array) computed of hobbies: hobbiesplus</h4>
+        <ul>
+          <li v-for="hobby of hobbiesplus">{{hobby}}</li>
+        </ul>
+      </p>
+      <p>
+        <h4>reactive data(object): wishMost</h4>
+        <p>{{wishMost}}</p>
+        <div>
+          <button @click="reactiveObjGo">gogogo</button>
+        </div>
+      </p>
+      <p>
+        <h4>reactive data(object) computed of wishMost: wishMostplus</h4>
+        <p>{{wishMostplus}}</p>
+      </p>
+      <wt :title="wish"></wt>
+    </div>
+    <script src="./js/vue.global.js"></script>
+    <script src="./compositions/useDayWorks.js"></script>
+    <script src="./compositions/useHobbies.js"></script>
+    <script>
+      const { ref, reactive, computed, watch, toRefs, onBeforeMount, onMounted, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, provide, inject, readonly } = Vue
+      const WT = {
+        props: ['title'],
+        template:  `
+        <h2>WT component</h2>
+        <hr />
+        <div>
+          <h4>parent props localization(use toRefs)</h4>
+          <p>{{title}}</p>
+          <h4>inject array</h4>
+          <p>{{works}}</p>
+          <h4>inject object</h4>
+          <p>{{state}}</p>
+          <h4>inject string</h4>
+          <p>{{wish}}</p>
+          <button @click="updateWish">change the inject data by using injection functions</button>
+        </div>
+        `,
+        setup(props, context) {
+          console.log('WT-setup-props:', props)
+          // console.log('WT-setup-context:', context)
+          // 因为 props 是响应式的，你不能使用 ES6 解构，因为它会消除 prop 的响应性。
+          // 如果需要解构 prop，可以通过使用 setup 函数中的 toRefs 来安全地完成此操作。
+          // 使用 `toRefs` 创建对prop的 `title` property 的响应式引用。
+          const { title } = toRefs(props)
+          console.log('title:', title)
+
+          /* ----------watch----------- */
+          const titleWatch = watch(title, (newVal, preVal) => {
+            console.log('WT-title-Watch-newVal:', newVal)
+            console.log('WT-title-Watch-preVal:', preVal)
+          })
+
+          /*-----------inject---------- */
+          const works = inject('works')
+          const state = inject('state')
+          let wish = inject('wish')
+          let updateWish = inject('updateWish')
+
+          return { title, works, state, wish, updateWish }
+        }
+      }
+      const app = Vue.createApp({
+        components: {
+          wt: WT
+        },
+        setup() {
+          let { works, worksplus, worksWatch, state, stateplus, stateWatch, wish, wishplus, wishWatch } = useDayWorks()
+          let { hobbies, hobbiesplus, hobbiesWatch, wishMost, wishMostplus } = useHobbies()
+          // console.log('works', works)
+          // console.log('state', state)
+          // console.log('wish', wish)
+          // console.log('hobbies', hobbies)
+          // console.log('wishMost', wishMost)
+
+          /* ---------event------------ */
+          // ref clcik
+          const refArrWorksGO = () => {
+            works.value[0] = 'get up'
+          }
+          const refObjStateGO = () => {
+            state.value.one = 'normal'
+          }
+          const refStrWishGO = () => {
+            wish.value = 'get better'
+          }
+          //reactive click
+          const reactiveArrGo = () => {
+            hobbies[0] = 'reading'
+          }
+          const reactiveObjGo = () => {
+            wishMost.work = 'wish fat salary'
+          }
+
+          /* ---------methods------------ */
+          const updateWish = () => {
+            wish.value = 'jb'
+          }
+
+          /* ---------provide------------ */
+          provide('works', works)
+          provide('state', state)
+          provide('wish', wish)
+          provide('updateWish', updateWish)
+
+          /* ---------lifecycle---------- */
+          onBeforeMount(() => {
+            console.log('onBeforeMount')
+          })
+          onMounted(() => {
+            console.log('onMounted')
+          })
+          onBeforeUpdate(() => {
+            console.log('onBeforeUpdate')
+          })
+          onUpdated(() => {
+            console.log('onUpdated')
+          })
+          onBeforeUnmount(() => {
+            console.log('onBeforeUnmount')
+          })
+          onUnmounted(() => {
+            console.log('onUnmounted')
+          })
+
+          return {
+            wish,
+            wishplus,
+            works,
+            worksplus,
+            state,
+            stateplus,
+            hobbies,
+            hobbiesplus,
+            wishMost,
+            wishMostplus,
+            refArrWorksGO,
+            refObjStateGO,
+            refStrWishGO,
+            reactiveArrGo,
+            reactiveObjGo,
+          }
+        },
+      })
+      app.mount('#app')
+    </script>
+  </body>
+</html>

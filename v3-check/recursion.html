@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+  <h2>遍历 DOM 树</h1>
+  <p style="color: green;">Tip: 利用递归实现</p>
+	<div>
+	  <ul>
+	    <li>想要学好递归</li>
+	    <li>记住一句话</li>
+	    <li>自己调用自己</li>
+	  </ul>
+	  <div>
+	    <div>
+	      <span>一定要用中止递归的条件</span>
+	    </div>
+	  </div>
+	</div>
+	<div id="demo_node">
+	  <ul>
+	    <li>不然的话</li>
+	  </ul>
+	  <p>就会陷入</p>
+	  <h2>死循环</h2>
+	  <div>
+	    <p>那么真的就是</p>
+	    <h3>
+	      <span>在写bug了</span>
+	    </h3>
+	  </div>
+	</div>	
+	<script>
+		let html = document.documentElement
+		let htmlC = html.children
+		function recursionDom(eleArr) {
+			for (let i = 0; i < eleArr.length; i++) {
+				var temp = eleArr[i]
+				console.log(temp)
+				temp.children && recursionDom(temp.children)
+			}
+		}
+		recursionDom(htmlC)
+	</script>
+</body>
+</html>

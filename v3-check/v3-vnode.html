@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="item-1"></div>
+    <div id="item-2"></div>
+    <div id="app"></div>
+    <script src="./js/vue.global.js"></script>
+    <script>
+      //       清除副作用
+      // 有时副作用函数会执行一些异步的副作用，这些响应需要在其失效时清除 (即完成之前状态已改变了) 。所以侦听副作用传入的函数可以接收一个 onInvalidate 函数作入参，用来注册清理失效时的回调。当以下情况发生时，这个失效回调会被触发：
+
+      // 副作用即将重新执行时
+      // 侦听器被停止 (如果在 setup() 或生命周期钩子函数中使用了 watchEffect，则在组件卸载时)
+      watchEffect(onInvalidate => {
+        const token = performAsyncOperation(id.value)
+        onInvalidate(() => {
+          // id has changed or watcher is stopped.
+          // invalidate previously pending async operation
+          token.cancel()
+        })
+      })
+    </script>
+  </body>
+</html>
