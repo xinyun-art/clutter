@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>animation-direction</title>
+		<style>
+			@keyframes rotate-move {
+				to {
+					transform: translateX(80vw) rotate(1080deg);
+				}
+			}
+			.ani__diamond {
+				width: 100px;
+				height: 100px;
+				background-color: chocolate;
+				/* animation: name duration timing-function delay iteration-count direction fill-mode; */
+				animation: rotate-move 3.6s cubic-bezier(0, 0.75, 0.8, 0.72) infinite alternate;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div>
+				<div class="ani__diamond"></div>
+			</div>
+		</div>
+		<script src="./js/vue.global.js"></script>
+		<script>
+			// const {  } = 'Vue'
+			const app = Vue.createApp({})
+			app.mount('#app')
+		</script>
+	</body>
+</html>
