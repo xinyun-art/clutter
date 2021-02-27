@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			body {
+				margin: 0;
+			}
+			.show-list {
+				width: 100%;
+				max-width: 375px;
+				height: 80vh;
+				margin: 0 auto;
+				border: 1px solid skyblue;
+				box-sizing: border-box;
+			}
+			.show-item {
+				padding: 6px;
+			}
+			input {
+				width: 100%;
+				height: 44px;
+				box-sizing: border-box;
+				outline: none;
+			}
+			button {
+				width: 100%;
+				height: 44px;
+				color: #666;
+				background-color: pink;
+				border: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="show-list">
+				<div class="show-item" v-for="(item, idx) of chatList" :key="idx">
+					<span>{{item.name}}：</span>
+					<span>{{item.words}}</span>
+				</div>
+			</div>
+			<input type="text" placeholder="Please input text..." v-model="speakWords" />
+			<button @click="emitChat">emit</button>
+		</div>
+		<script src="./js/vue.global.js"></script>
+		<script>
+			const { onMounted, reactive, ref } = Vue
+			let ws = null
+			let reconnTimer = null
+			let lockReconnect = false // 一把锁，用来避免在某些情况下短时间内重复执行reconnect函数
+
+			const app = Vue.createApp({
+				setup() {
+					let chatList = reactive([])
+					let speakWords = ref('')
+
+					onMounted(() => {
+						console.log('onMounted')
+						initWs()
+					})
+
+					const emitChat = () => {
+						ws.send(JSON.stringify({ type: 'chat', name: '鲨臂', words: speakWords.value }))
+						speakWords.value = ''
+					}
+
+					// 重连（注意重连频率问题）
+					const reconnect = () => {
+						/**
+						 * 经测试（关闭服务器->会触发客户端WebSocket的onclose监听事件），(在不限制触发频率的情况下)谷歌浏览器上大约每两秒就会触发一次onclose监听事件，即每大约两秒就会执行reconnect函数重连一次。
+						 * 不做限制直接重连，代码如下
+						 * 	// console.log('断线正在重连中...')
+								// initWs()
+						 * 如果不做限制的话，重连频率有些过快了，因此用setTimeout限制一下重连频率。
+						 */
+
+						// 如果lockReconnect为true，说明现在现在任务队列中已经有一个定时器在等待倒计时准备重连了，就终止代码执行，避免再生成一个定时器重复执行重连操作
+						if (lockReconnect) return
+						lockReconnect = true
+						// reconnTimer && clearTimeout(reconnTimer)
+						reconnTimer = setTimeout(() => {
+							console.log('断线正在重连中...')
+							initWs()
+							console.log('这是一次重连')
+							// 本次重连完成（不管连没连上），都将lockReconnect锁释放（置为false），这样如果没连上就能再次进入reconnect函数执行重连了
+							lockReconnect = false
+						}, 10000)
+					}
+
+					// 心跳检测
+					const heartbeat = {
+						timestamp: 6000,
+						hbEmitTimer: null,
+						hbReceiveTimer: null,
+						start: function () {
+							this.hbEmitTimer && clearTimeout(this.hbEmitTimer)
+							this.hbReceiveTimer && clearTimeout(this.hbReceiveTimer)
+							this.hbEmitTimer = setTimeout(() => {
+								ws.send('ping')
+								this.hbReceiveTimer = setTimeout(() => {
+									console.log('hbReceiveTimer-1')
+									// ws.close()
+									reconnect()
+									console.log('hbReceiveTimer-2')
+								}, this.timestamp)
+							}, this.timestamp)
+						},
+					}
+
+					const initWs = () => {
+						ws = new WebSocket('ws://localhost:5000/')
+
+						ws.onopen = wsOpen
+						ws.onmessage = wsMessage
+						ws.error = wsError
+						ws.onclose = wsClose
+					}
+					const wsOpen = () => {
+						console.log('wsOpen-连接已创建')
+						heartbeat.start()
+					}
+					const wsMessage = message => {
+						console.log('message:', message)
+						if (message.data !== 'pong') {
+							const msg = JSON.parse(message.data)
+							chatList.push(msg)
+						}
+						heartbeat.start()
+					}
+					const wsError = error => {
+						console.log('wsError:', error)
+						reconnect()
+					}
+					const wsClose = () => {
+						console.log('wsClose-连接已关闭')
+						reconnect()
+					}
+
+					return { emitChat, chatList, speakWords }
+				},
+			})
+			app.mount('#app')
+		</script>
+	</body>
+</html>
