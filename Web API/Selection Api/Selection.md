@@ -13,8 +13,11 @@
 - 我们可以这样使用这个函数：
 
   ```js
-  var selObj = window.getSelection();
-  var range  = selObj.getRangeAt(0);
+  // 情景：鼠标右滑选中两个字
+  // 一个 Selection 对象表示用户选择的 Range 的集合。通常，它只包含一个区域，访问方式如下：
+  // 调用 Selection.toString() 方法返回包含在选区内的文本
+  var selObj = window.getSelection(); // selObj 是一个 Selection 对象
+  var range  = selObj.getRangeAt(0); // range 是一个 Range 对象
   console.log("selObj:", selObj);
   console.log("range:", range);
   ```
@@ -46,7 +49,7 @@
 
   接下来用鼠标选中**开初不会**这一段区域：
 
-  ![](./images/Selection/3.png)
+  ![](./images/Selection/3.png)                                                                                                                                          
 
   点击get按钮：
 
@@ -109,7 +112,7 @@
 
   ![](./images/Selection/11.png)
 
-  发现鼠标光标位置为 1，说明此时`<span>开初</span>`被视为一个整体，所以将鼠标光标移至`不`字之前时光标的偏移量才会为 1。
+  发现鼠标光标位置为 1，说明此时`<span>开初</span>`被视为一个整体，所以将鼠标光标移至`不`字之前时光标的偏移量为 1。
 
   此时再看MDN上对`anchorOffset`属性的解释就好理解一些了：
 
